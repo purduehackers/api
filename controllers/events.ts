@@ -15,15 +15,7 @@ class EventsController {
 
   public async getAllEvents(req: Request, res: Response) {
     try {
-      let select = {};
-      if (req.query.select) {
-        try {
-          select = JSON.parse((req.query as any).select);
-        } catch (err) {
-          return res.status(400).send(`Invalid select JSON`);
-        }
-      }
-      let events = await fetchEvents(select);
+      let events = await fetchEvents((req.query as any).groq);
       res.json(events);
     } catch (err) {
       return res

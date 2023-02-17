@@ -1,18 +1,8 @@
-import { FieldSet, Records } from "airtable";
-import { QueryParams } from "airtable/lib/query_params";
-import { eventTable } from "../db/events";
+import { client } from "../db/events";
 
-export async function fetchEvents(
-  select?: QueryParams<FieldSet>
-): Promise<Records<FieldSet>> {
-  return new Promise((resolve, reject) => {
-    select.filterByFormula = `AND({Unlisted} = 0, {Event Name} != ''${
-      select.filterByFormula ? `, ${select.filterByFormula}` : ""
-    })`;
-    eventTable
-      .select(select)
-      .all()
-      .then((events) => resolve(events))
-      .catch((err) => reject(err));
+export async function fetchEvents(groq?: string): Promise<any> {
+  //TODO: fix ts any
+  return await client.fetch(groq).catch((err) => {
+    console.log(`error fetching:`, err, `\n groq query: ${groq}`);
   });
 }
