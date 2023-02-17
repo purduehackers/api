@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/purduehackers/purduehackers-api#readme",
   "dependencies": {
+    "@sanity/client": "^5.2.1",
     "@types/cors": "^2.8.13",
     "airtable": "^0.11.6",
     "body-parser": "^1.20.1",
