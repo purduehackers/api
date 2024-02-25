@@ -21,7 +21,9 @@
   },
   "homepage": "https://github.com/purduehackers/purduehackers-api#readme",
   "dependencies": {
+    "@prisma/client": "5.10.2",
     "@sanity/client": "^5.2.1",
+    "@types/body-parser": "^1.19.5",
     "@types/cors": "^2.8.13",
     "airtable": "^0.11.6",
     "body-parser": "^1.20.1",
@@ -31,6 +33,7 @@
   },
   "devDependencies": {
     "@types/express": "^4.17.14",
+    "prisma": "^5.10.2",
     "typescript": "^4.9.3"
   }
 }
