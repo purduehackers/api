@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { fetchEvents } from "../utils/fetchEvents";
+import { fetchPassports } from "../utils/fetchPassports";
 
 class PassportsController {
   public path = "/passports";
@@ -15,8 +16,14 @@ class PassportsController {
 
   public async getPassports(req: Request, res: Response) {
     try {
-      // let events = await fetchEvents((req.query as any).groq);
-      // res.json(events);
+      if (req.headers.authorization === `Bearer ${process.env.PASSPORTS_KEY}`) {
+        const passports = await fetchPassports();
+        return res.json(passports);
+      } else {
+        return res
+          .status(401)
+          .send("Missing or incorrect key for this endpoint");
+      }
     } catch (err) {
       return res
         .status(err.statusCode || 500)
