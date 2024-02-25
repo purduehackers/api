@@ -1,5 +1,9 @@
 import prisma from "./prisma";
 
 export async function fetchPassports() {
-  return await prisma.passport.findMany();
+  return await prisma.passport.findMany({
+    orderBy: {
+      id: "asc",
+    },
+  });
 }
