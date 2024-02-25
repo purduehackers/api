@@ -1,0 +1,62 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model auth_grant {
+  id           Int          @id @default(autoincrement())
+  owner_id     Int
+  redirect_uri Json         @db.Json
+  until        DateTime     @db.Timestamptz(6)
+  scope        Json         @db.Json
+  client_id    String       @db.VarChar
+  code         String       @db.VarChar
+  user         user         @relation(fields: [owner_id], references: [id], onDelete: Cascade, map: "fk_auth_grant_owner")
+  auth_token   auth_token[]
+}
+
+model auth_token {
+  id         Int        @id @default(autoincrement())
+  grant_id   Int
+  token      String     @db.VarChar
+  until      DateTime   @db.Timestamptz(6)
+  auth_grant auth_grant @relation(fields: [grant_id], references: [id], onDelete: Cascade, map: "fk_auth_token_grant")
+}
+
+model passport {
+  id              Int      @id @default(autoincrement())
+  owner_id        Int
+  version         Int
+  surname         String   @db.VarChar
+  name            String   @db.VarChar
+  date_of_birth   DateTime @db.Date
+  date_of_issue   DateTime @db.Date
+  place_of_origin String   @db.VarChar
+  secret          String   @default("INSECURE") @db.VarChar
+  activated       Boolean  @default(false)
+  user            user     @relation(fields: [owner_id], references: [id], onDelete: Cascade, map: "fk_passport_owner")
+}
+
+model seaql_migrations {
+  version    String @id @db.VarChar
+  applied_at BigInt
+}
+
+model user {
+  id         Int          @id @default(autoincrement())
+  discord_id BigInt       @unique
+  role       role_enum
+  totp       String?      @db.VarChar
+  auth_grant auth_grant[]
+  passport   passport[]
+}
+
+enum role_enum {
+  hacker
+  admin
+}
