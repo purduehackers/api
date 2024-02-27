@@ -1,5 +1,6 @@
 import { Request, Response, Router } from "express";
 import { fetchPassports } from "../utils/fetchPassports";
+import { updatePassports } from "../utils/updatePassports";
 
 class PassportsController {
   public getPath = "/passports";
@@ -18,8 +19,13 @@ class PassportsController {
   public async getPassports(req: Request, res: Response) {
     try {
       if (req.headers.authorization === `Bearer ${process.env.PASSPORTS_KEY}`) {
-        const passports = await fetchPassports();
-        return res.json(passports);
+        try {
+          const passports = await fetchPassports();
+          return res.json(passports);
+        } catch (err) {
+          console.log("Error updating passport:", err);
+          return res.status(400).send(`Error updating passport: ${err}`);
+        }
       } else {
         return res
           .status(401)
@@ -37,50 +43,8 @@ class PassportsController {
   public async postPassports(req: Request, res: Response) {
     try {
       if (req.headers.authorization === `Bearer ${process.env.PASSPORTS_KEY}`) {
-        // Fetch passport given id and set activated to true
-        // Fetch all other passports by that user that are marked activated
-        // If there are any, mark all of them deactivated
-
-        const passportId = Number(req.body.id);
-
-        try {
-          const passport = await prisma.passport.update({
-            where: {
-              id: passportId,
-            },
-            data: {
-              activated: true,
-            },
-          });
-          const ownerId = passport.owner_id;
-
-          const otherPassports = await prisma.passport.findMany({
-            where: {
-              owner_id: ownerId,
-              activated: true,
-              NOT: {
-                id: passportId,
-              },
-            },
-          });
-          if (otherPassports.length > 0) {
-            for (const otherPassport of otherPassports) {
-              await prisma.passport.update({
-                where: {
-                  id: otherPassport.id,
-                },
-                data: {
-                  activated: false,
-                },
-              });
-            }
-          }
-
-          return res.json(passport);
-        } catch (err) {
-          console.log("Error updating passport:", err);
-          return res.status(400).send(`Error updating passport: ${err}`);
-        }
+        const updatedPassport = await updatePassports(req.body.id);
+        return res.json(updatedPassport);
       } else {
         return res
           .status(401)
