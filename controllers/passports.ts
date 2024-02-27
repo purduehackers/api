@@ -1,5 +1,4 @@
 import { Request, Response, Router } from "express";
-import { fetchEvents } from "../utils/fetchEvents";
 import { fetchPassports } from "../utils/fetchPassports";
 
 class PassportsController {
