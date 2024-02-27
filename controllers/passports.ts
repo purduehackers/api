@@ -76,7 +76,7 @@ class PassportsController {
             }
           }
 
-          return res.json({ ok: true });
+          return res.json(passport);
         } catch (err) {
           return res.status(400).send(`Error updating passport: ${err}`);
         }
